@@ -396,3 +396,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+ThirdC\#Task/ThirdC\#Task.csproj
+ThirdC\#Task/App.config
+ThirdC\#Task/Properties/AssemblyInfo.cs
