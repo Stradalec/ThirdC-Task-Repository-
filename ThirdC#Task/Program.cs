@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 
 namespace ThirdC_Task {
 
@@ -19,64 +20,70 @@ namespace ThirdC_Task {
   class Matrix {
     protected int[,] matrix;
     protected int rowAndLineCount;
+    protected int length;
     public Matrix() {
       Random random = new Random();
       rowAndLineCount = random.Next(2, 5);
       matrix = new int[rowAndLineCount, rowAndLineCount];
-
-    }
-    public void SetMatrix() {
-      Random random = new Random();
       for (int lineIndex = 0; lineIndex < rowAndLineCount; ++lineIndex) {
         for (int rowIndex = 0; rowIndex < rowAndLineCount; ++rowIndex) {
           matrix[lineIndex, rowIndex] = random.Next(0, 100);
         }
       }
+      length = matrix.GetLength(0);
     }
+    
   }
 
   class CloneMatrix : Matrix, ICloneable, IComparable {
 
+    public object Clone() {
+      CloneMatrix clonedRowCount = new CloneMatrix();
+      clonedRowCount.rowAndLineCount = this.rowAndLineCount;
+      clonedRowCount.matrix = this.matrix;
+      return clonedRowCount;
+    }
+
     public static CloneMatrix operator +(CloneMatrix first, CloneMatrix second) {
-      CloneMatrix resultMatrix = new CloneMatrix();
+      CloneMatrix resultMatrix = (CloneMatrix)first.Clone();
       try {
-        for (int lineIndex = 0; lineIndex < second.rowAndLineCount; ++lineIndex) {
-          for (int rowIndex = 0; rowIndex < second.rowAndLineCount; ++rowIndex) {
+        for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
+          for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
             resultMatrix.matrix[lineIndex, rowIndex] = first.matrix[lineIndex, rowIndex] + second.matrix[lineIndex, rowIndex];
           }
         }
       } catch (IndexOutOfRangeException exception) {
         Console.WriteLine(exception.Message);
       }
-      resultMatrix.ShowMatrix();
+      resultMatrix.ShowMatrix(resultMatrix);
       return resultMatrix;
     }
 
     public static CloneMatrix operator -(CloneMatrix first, CloneMatrix second) {
-      CloneMatrix resultMatrix = new CloneMatrix();
+      CloneMatrix resultMatrix = (CloneMatrix)first.Clone();
       for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
         for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
           resultMatrix.matrix[lineIndex, rowIndex] = first.matrix[lineIndex, rowIndex] - second.matrix[lineIndex, rowIndex];
         }
       }
-      resultMatrix.ShowMatrix();
+      resultMatrix.ShowMatrix(resultMatrix);
       return resultMatrix;
     }
 
     public static CloneMatrix operator *(CloneMatrix first, CloneMatrix second) {
-      CloneMatrix resultMatrix = new CloneMatrix();
+      CloneMatrix resultMatrix = (CloneMatrix)first.Clone();
       for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
         Console.Write("\n");
         for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
           resultMatrix.matrix[lineIndex, rowIndex] = first.matrix[lineIndex, rowIndex] * second.matrix[lineIndex, rowIndex];
         }
       }
-      resultMatrix.ShowMatrix();
+      resultMatrix.ShowMatrix(resultMatrix);
       return resultMatrix;
     }
 
     public static CloneMatrix operator +(CloneMatrix inputMatrix) {
-      CloneMatrix resultMatrix = new CloneMatrix();
+      CloneMatrix resultMatrix = (CloneMatrix)inputMatrix.Clone();
       try {
         for (int lineIndex = 0; lineIndex < inputMatrix.rowAndLineCount; ++lineIndex) {
           for (int rowIndex = 0; rowIndex < inputMatrix.rowAndLineCount; ++rowIndex) {
@@ -86,7 +93,7 @@ namespace ThirdC_Task {
       } catch (IndexOutOfRangeException exception) {
         Console.WriteLine(exception.Message);
       }
-      resultMatrix.ShowMatrix();
+      resultMatrix.ShowMatrix(resultMatrix);
       return resultMatrix;
     }
     public static int operator !(CloneMatrix inputMatrix) {
@@ -159,15 +166,19 @@ namespace ThirdC_Task {
       if (myObject is CloneMatrix) {
         var parameter = myObject as CloneMatrix;
         if (parameter.rowAndLineCount > this.rowAndLineCount) {
+          Console.WriteLine("1 case");
           return -1;
         }
         if (parameter.rowAndLineCount == this.rowAndLineCount) {
+          Console.WriteLine("2 case");
           return 0;
         }
         if (parameter.rowAndLineCount < this.rowAndLineCount) {
+          Console.WriteLine("3 case");
           return 1;
         }
       }
+      Console.WriteLine("4 case");
       return -1;
     }
 
@@ -177,20 +188,16 @@ namespace ThirdC_Task {
     }
 
 
-    public void ShowMatrix() {
-      for (int lineIndex = 0; lineIndex < rowAndLineCount; ++lineIndex) {
+    public void ShowMatrix(CloneMatrix first) {
+      for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
         Console.Write("\n");
-        for (int rowIndex = 0; rowIndex < rowAndLineCount; ++rowIndex) {
+        for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
           Console.Write(matrix[lineIndex, rowIndex].ToString() + " ");
         }
       }
       Console.Write("\n");
     }
-    public object Clone() {
-      CloneMatrix clonedRowCount = new CloneMatrix();
-      clonedRowCount.rowAndLineCount = this.rowAndLineCount;
-      return clonedRowCount;
-    }
+
   }
   internal class Program {
 
@@ -198,10 +205,8 @@ namespace ThirdC_Task {
       char select = ' ';
       CloneMatrix myMatrix = new CloneMatrix();
       CloneMatrix myCloneMatrix = (CloneMatrix)myMatrix.Clone();
-      myMatrix.SetMatrix();
-      myMatrix.ShowMatrix();
-      myCloneMatrix.SetMatrix();
-      myCloneMatrix.ShowMatrix();
+      myMatrix.ShowMatrix(myMatrix);
+      myCloneMatrix.ShowMatrix(myCloneMatrix);
       Console.WriteLine("Select your operation: s = summ, d = difference, c = compare, m = multiplication, " +
                         "r = reverse matrix, f = determinant.");
       select = Convert.ToChar(Console.ReadLine());
@@ -216,10 +221,10 @@ namespace ThirdC_Task {
           Console.WriteLine((myMatrix * myCloneMatrix).ToString() + "\n");
           break;
         case 'r':
-          Console.WriteLine((+myMatrix).ToString() + "\n");
+          Console.WriteLine((+myCloneMatrix).ToString() + "\n");
           break;
         case 'f':
-          Console.WriteLine((!myMatrix).ToString() + "\n");
+          Console.WriteLine((!myCloneMatrix).ToString() + "\n");
           break;
         case 'c':
           Console.WriteLine((myMatrix == myCloneMatrix).ToString() + "\n");
