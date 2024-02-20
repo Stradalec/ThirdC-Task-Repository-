@@ -20,7 +20,6 @@ namespace ThirdC_Task {
   class Matrix {
     protected int[,] matrix;
     protected int rowAndLineCount;
-    protected int length;
     public Matrix() {
       Random random = new Random();
       rowAndLineCount = random.Next(2, 5);
@@ -30,13 +29,11 @@ namespace ThirdC_Task {
           matrix[lineIndex, rowIndex] = random.Next(0, 100);
         }
       }
-      length = matrix.GetLength(0);
     }
-    
+
   }
 
   class CloneMatrix : Matrix, ICloneable, IComparable {
-
     public object Clone() {
       CloneMatrix clonedRowCount = new CloneMatrix();
       clonedRowCount.rowAndLineCount = this.rowAndLineCount;
@@ -75,10 +72,13 @@ namespace ThirdC_Task {
       for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
         Console.Write("\n");
         for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
-          resultMatrix.matrix[lineIndex, rowIndex] = first.matrix[lineIndex, rowIndex] * second.matrix[lineIndex, rowIndex];
+          for (int inner = 0; inner < first.rowAndLineCount; ++inner) {
+            resultMatrix.matrix[lineIndex, rowIndex] += first.matrix[lineIndex, inner] * second.matrix[inner, rowIndex];
+          }
+          Console.Write(resultMatrix.matrix[lineIndex, rowIndex] + " ");
+          resultMatrix.matrix[lineIndex, rowIndex] = 0;
         }
       }
-      resultMatrix.ShowMatrix(resultMatrix);
       return resultMatrix;
     }
 
@@ -86,15 +86,24 @@ namespace ThirdC_Task {
       CloneMatrix resultMatrix = (CloneMatrix)inputMatrix.Clone();
       try {
         for (int lineIndex = 0; lineIndex < inputMatrix.rowAndLineCount; ++lineIndex) {
+          Console.Write("\n");
           for (int rowIndex = 0; rowIndex < inputMatrix.rowAndLineCount; ++rowIndex) {
-            resultMatrix.matrix[lineIndex, rowIndex] = inputMatrix.matrix[rowIndex, lineIndex];
+            Console.Write(inputMatrix.matrix[rowIndex, lineIndex] + " ");
           }
         }
       } catch (IndexOutOfRangeException exception) {
         Console.WriteLine(exception.Message);
       }
-      resultMatrix.ShowMatrix(resultMatrix);
       return resultMatrix;
+    }
+    public void ShowMatrix(CloneMatrix first) {
+      for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
+        Console.Write("\n");
+        for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
+          Console.Write(matrix[lineIndex, rowIndex].ToString() + " ");
+        }
+      }
+      Console.Write("\n");
     }
     public static int operator !(CloneMatrix inputMatrix) {
       int determinant = 0;
@@ -188,15 +197,7 @@ namespace ThirdC_Task {
     }
 
 
-    public void ShowMatrix(CloneMatrix first) {
-      for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
-        Console.Write("\n");
-        for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
-          Console.Write(matrix[lineIndex, rowIndex].ToString() + " ");
-        }
-      }
-      Console.Write("\n");
-    }
+
 
   }
   internal class Program {
@@ -240,3 +241,4 @@ namespace ThirdC_Task {
   }
 
 }
+
