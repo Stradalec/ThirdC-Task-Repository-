@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
 
-namespace ThirdC_Task {
+
+namespace ThirdCTask {
 
   public class InvalidDepartmentException : System.Exception {
     public InvalidDepartmentException()
@@ -24,9 +20,9 @@ namespace ThirdC_Task {
       Random random = new Random();
       rowAndLineCount = random.Next(2, 5);
       matrix = new int[rowAndLineCount, rowAndLineCount];
-      for (int lineIndex = 0; lineIndex < rowAndLineCount; ++lineIndex) {
-        for (int rowIndex = 0; rowIndex < rowAndLineCount; ++rowIndex) {
-          matrix[lineIndex, rowIndex] = random.Next(0, 100);
+      for (int rowIndex = 0; rowIndex < rowAndLineCount; ++rowIndex) {
+        for (int columnIndex = 0; columnIndex < rowAndLineCount; ++columnIndex) {
+          matrix[rowIndex, columnIndex] = random.Next(0, 100);
         }
       }
     }
@@ -44,12 +40,14 @@ namespace ThirdC_Task {
     public static CloneMatrix operator +(CloneMatrix first, CloneMatrix second) {
       CloneMatrix resultMatrix = (CloneMatrix)first.Clone();
       try {
-        for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
-          for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
-            resultMatrix.matrix[lineIndex, rowIndex] = first.matrix[lineIndex, rowIndex] + second.matrix[lineIndex, rowIndex];
+        for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
+          for (int columnIndex = 0; columnIndex < first.rowAndLineCount; ++columnIndex) {
+            resultMatrix.matrix[rowIndex, columnIndex] = first.matrix[rowIndex, columnIndex] + second.matrix[rowIndex, columnIndex];
           }
         }
-      } catch (IndexOutOfRangeException exception) {
+      } 
+      catch (IndexOutOfRangeException exception) 
+      {
         Console.WriteLine(exception.Message);
       }
       resultMatrix.ShowMatrix(resultMatrix);
@@ -58,9 +56,9 @@ namespace ThirdC_Task {
 
     public static CloneMatrix operator -(CloneMatrix first, CloneMatrix second) {
       CloneMatrix resultMatrix = (CloneMatrix)first.Clone();
-      for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
-        for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
-          resultMatrix.matrix[lineIndex, rowIndex] = first.matrix[lineIndex, rowIndex] - second.matrix[lineIndex, rowIndex];
+      for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
+        for (int columnIndex = 0; columnIndex < first.rowAndLineCount; ++columnIndex) {
+          resultMatrix.matrix[rowIndex, columnIndex] = first.matrix[rowIndex, columnIndex] - second.matrix[rowIndex, columnIndex];
         }
       }
       resultMatrix.ShowMatrix(resultMatrix);
@@ -69,14 +67,14 @@ namespace ThirdC_Task {
 
     public static CloneMatrix operator *(CloneMatrix first, CloneMatrix second) {
       CloneMatrix resultMatrix = (CloneMatrix)first.Clone();
-      for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
+      for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
         Console.Write("\n");
-        for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
+        for (int columnIndex = 0; columnIndex < first.rowAndLineCount; ++columnIndex) {
           for (int inner = 0; inner < first.rowAndLineCount; ++inner) {
-            resultMatrix.matrix[lineIndex, rowIndex] += first.matrix[lineIndex, inner] * second.matrix[inner, rowIndex];
+            resultMatrix.matrix[rowIndex, columnIndex] += first.matrix[rowIndex, inner] * second.matrix[inner, columnIndex];
           }
-          Console.Write(resultMatrix.matrix[lineIndex, rowIndex] + " ");
-          resultMatrix.matrix[lineIndex, rowIndex] = 0;
+          Console.Write(resultMatrix.matrix[rowIndex, columnIndex] + " ");
+          resultMatrix.matrix[rowIndex, columnIndex] = 0;
         }
       }
       return resultMatrix;
@@ -85,22 +83,24 @@ namespace ThirdC_Task {
     public static CloneMatrix operator +(CloneMatrix inputMatrix) {
       CloneMatrix resultMatrix = (CloneMatrix)inputMatrix.Clone();
       try {
-        for (int lineIndex = 0; lineIndex < inputMatrix.rowAndLineCount; ++lineIndex) {
+        for (int rowIndex = 0; rowIndex < inputMatrix.rowAndLineCount; ++rowIndex) {
           Console.Write("\n");
-          for (int rowIndex = 0; rowIndex < inputMatrix.rowAndLineCount; ++rowIndex) {
-            Console.Write(inputMatrix.matrix[rowIndex, lineIndex] + " ");
+          for (int columnIndex = 0; columnIndex < inputMatrix.rowAndLineCount; ++columnIndex) {
+            Console.Write(inputMatrix.matrix[columnIndex, rowIndex] + " ");
           }
         }
-      } catch (IndexOutOfRangeException exception) {
+      } 
+      catch (IndexOutOfRangeException exception) 
+      {
         Console.WriteLine(exception.Message);
       }
       return resultMatrix;
     }
     public void ShowMatrix(CloneMatrix first) {
-      for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
+      for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
         Console.Write("\n");
-        for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
-          Console.Write(matrix[lineIndex, rowIndex].ToString() + " ");
+        for (int columnIndex = 0; columnIndex < first.rowAndLineCount; ++columnIndex) {
+          Console.Write(matrix[rowIndex, columnIndex].ToString() + " ");
         }
       }
       Console.Write("\n");
@@ -128,25 +128,43 @@ namespace ThirdC_Task {
 
     public static bool operator ==(CloneMatrix first, CloneMatrix second) {
       byte check = 0;
-      for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
-        for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
-          if (first.matrix[lineIndex, rowIndex] != second.matrix[lineIndex, rowIndex]) {
+      for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
+        for (int columnIndex = 0; columnIndex < first.rowAndLineCount; ++columnIndex) {
+          if (first.matrix[rowIndex, columnIndex] != second.matrix[rowIndex, columnIndex]) {
             ++check;
           };
         }
       }
-      if (check != 0) {
-        return false;
-      } else {
+      if (check == 0) {
         return true;
+      } else {
+        return false;
       }
     }
+    public static bool operator >(CloneMatrix first, CloneMatrix second) {
+      int result = 0;
+      for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
+        for (int columnIndex = 0; columnIndex < first.rowAndLineCount; ++columnIndex) {
+          result = result + first.matrix[rowIndex, columnIndex] * first.matrix[rowIndex, columnIndex] - second.matrix[rowIndex, columnIndex] * second.matrix[rowIndex, columnIndex];
+        }
+      }
+      return result > 0;
+    }
 
+    public static bool operator <(CloneMatrix first, CloneMatrix second) {
+      int result = 0;
+      for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
+        for (int columnIndex = 0; columnIndex < first.rowAndLineCount; ++columnIndex) {
+          result = result + first.matrix[rowIndex, columnIndex] * first.matrix[rowIndex, columnIndex] - second.matrix[rowIndex, columnIndex] * second.matrix[rowIndex, columnIndex];
+        }
+      }
+      return result < 0;
+    }
     public static bool operator !=(CloneMatrix first, CloneMatrix second) {
       byte check = 0;
-      for (int lineIndex = 0; lineIndex < first.rowAndLineCount; ++lineIndex) {
-        for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
-          if (first.matrix[lineIndex, rowIndex] != second.matrix[lineIndex, rowIndex]) {
+      for (int rowIndex = 0; rowIndex < first.rowAndLineCount; ++rowIndex) {
+        for (int columnIndex = 0; columnIndex < first.rowAndLineCount; ++columnIndex) {
+          if (first.matrix[rowIndex, columnIndex] != second.matrix[rowIndex, columnIndex]) {
             ++check;
           };
         }
@@ -156,6 +174,12 @@ namespace ThirdC_Task {
       } else {
         return false;
       }
+    }
+    public static bool operator >=(CloneMatrix first, CloneMatrix second) {
+      return !(first < second);
+    }
+    public static bool operator <=(CloneMatrix first, CloneMatrix second) {
+      return !(first > second);
     }
     public override bool Equals(object myObject) {
       bool result = false;
@@ -170,7 +194,18 @@ namespace ThirdC_Task {
     public override int GetHashCode() {
       return (int)this.rowAndLineCount;
     }
-
+    public static implicit operator int[,](CloneMatrix inputMatrix) {
+      return inputMatrix.matrix;
+    }
+    public static explicit operator int(CloneMatrix inputMatrix) {
+      return inputMatrix.rowAndLineCount;
+    }
+    public static bool operator true(CloneMatrix inputMatrix) {
+      return inputMatrix.rowAndLineCount != 1;
+    }
+    public static bool operator false(CloneMatrix inputMatrix) {
+      return inputMatrix.rowAndLineCount == 1;
+    }
     int IComparable.CompareTo(object myObject) {
       if (myObject is CloneMatrix) {
         var parameter = myObject as CloneMatrix;
